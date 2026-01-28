@@ -454,6 +454,53 @@ nav a:hover {
   font-size: 0.9rem;
 }
 
+.quick-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.quick-stat {
+  padding: 20px;
+  border-radius: 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.quick-stat.lowest {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.05));
+  border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.quick-stat.average {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.05));
+  border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.quick-stat.highest {
+  background: linear-gradient(135deg, rgba(244, 67, 54, 0.2), rgba(244, 67, 54, 0.05));
+  border: 1px solid rgba(244, 67, 54, 0.3);
+}
+
+.qs-label {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+
+.qs-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.qs-city {
+  font-size: 0.9rem;
+  color: var(--primary);
+}
+
 /* Insights Section */
 .split-view {
   display: grid;

@@ -27,6 +27,15 @@ function App() {
     p.city.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // Calculate price stats
+  const priceStats = livePrices.length > 0 ? {
+    min: Math.min(...livePrices.map(p => p.price)),
+    max: Math.max(...livePrices.map(p => p.price)),
+    avg: (livePrices.reduce((sum, p) => sum + p.price, 0) / livePrices.length).toFixed(2),
+    minCity: livePrices.find(p => p.price === Math.min(...livePrices.map(x => x.price)))?.city,
+    maxCity: livePrices.find(p => p.price === Math.max(...livePrices.map(x => x.price)))?.city
+  } : null;
+
   // Fetch real-time data from our local API
   useEffect(() => {
     const fetchData = async () => {
@@ -220,6 +229,27 @@ function App() {
           />
           <span className="result-count">{filteredPrices.length} cities</span>
         </div>
+
+        {priceStats && (
+          <div className="quick-stats">
+            <div className="quick-stat lowest">
+              <span className="qs-label">📉 Lowest</span>
+              <span className="qs-value">₹{priceStats.min.toFixed(2)}</span>
+              <span className="qs-city">{priceStats.minCity}</span>
+            </div>
+            <div className="quick-stat average">
+              <span className="qs-label">📊 Average</span>
+              <span className="qs-value">₹{priceStats.avg}</span>
+              <span className="qs-city">All Cities</span>
+            </div>
+            <div className="quick-stat highest">
+              <span className="qs-label">📈 Highest</span>
+              <span className="qs-value">₹{priceStats.max.toFixed(2)}</span>
+              <span className="qs-city">{priceStats.maxCity}</span>
+            </div>
+          </div>
+        )}
+
         <div className="price-table-container glass-panel animate-in">
           <table className="price-table">
             <thead>
