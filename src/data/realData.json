@@ -1,0 +1,172 @@
+[
+  {
+    "city": "Ahmedabad",
+    "price": 5.55,
+    "avg": 6.0411
+  },
+  {
+    "city": "Ajmer",
+    "price": 5.05,
+    "avg": 5.5596000000000005
+  },
+  {
+    "city": "Barwala",
+    "price": 4.95,
+    "avg": 5.4407000000000005
+  },
+  {
+    "city": "Bengaluru",
+    "price": 5.7,
+    "avg": 6.060700000000001
+  },
+  {
+    "city": "Brahmapur",
+    "price": 5.25,
+    "avg": 5.5964
+  },
+  {
+    "city": "Chennai",
+    "price": 5.8,
+    "avg": 6.0536
+  },
+  {
+    "city": "Chittoor",
+    "price": 5.73,
+    "avg": 5.9836
+  },
+  {
+    "city": "Delhi",
+    "price": 5.2,
+    "avg": 5.885700000000001
+  },
+  {
+    "city": "E.Godavari",
+    "price": 5.15,
+    "avg": 5.4875
+  },
+  {
+    "city": "Hospet",
+    "price": 5.1,
+    "avg": 5.4607
+  },
+  {
+    "city": "Hyderabad",
+    "price": 5.1,
+    "avg": 5.4214
+  },
+  {
+    "city": "Jabalpur",
+    "price": 5.25,
+    "avg": 5.6696
+  },
+  {
+    "city": "Kolkata",
+    "price": 5.8,
+    "avg": 6.032100000000001
+  },
+  {
+    "city": "Ludhiana",
+    "price": 4.93,
+    "avg": 5.5139
+  },
+  {
+    "city": "Mumbai",
+    "price": 5.75,
+    "avg": 6.094600000000001
+  },
+  {
+    "city": "Mysuru",
+    "price": 5.72,
+    "avg": 6.0811
+  },
+  {
+    "city": "Namakkal",
+    "price": 5.2,
+    "avg": 5.5786
+  },
+  {
+    "city": "Pune",
+    "price": 5.7,
+    "avg": 6.157100000000001
+  },
+  {
+    "city": "Raipur",
+    "price": 5.35,
+    "avg": 5.5925
+  },
+  {
+    "city": "Surat",
+    "price": 5.55,
+    "avg": 6.060700000000001
+  },
+  {
+    "city": "Vijayawada",
+    "price": 5.5,
+    "avg": 5.6929
+  },
+  {
+    "city": "Vizag",
+    "price": 5.15,
+    "avg": 5.4946
+  },
+  {
+    "city": "W.Godavari",
+    "price": 5.15,
+    "avg": 5.4875
+  },
+  {
+    "city": "Warangal",
+    "price": 5.07,
+    "avg": 5.4533000000000005
+  },
+  {
+    "city": "Allahabad",
+    "price": 5.38,
+    "avg": 5.925
+  },
+  {
+    "city": "Bhopal",
+    "price": 5.4,
+    "avg": 5.6482
+  },
+  {
+    "city": "Indore",
+    "price": 5.25,
+    "avg": 5.635700000000001
+  },
+  {
+    "city": "Kanpur",
+    "price": 5.19,
+    "avg": 5.8454
+  },
+  {
+    "city": "Luknow",
+    "price": 5.57,
+    "avg": 6.1211
+  },
+  {
+    "city": "Muzaffurpur",
+    "price": 5.5,
+    "avg": 6.064299999999999
+  },
+  {
+    "city": "Nagpur",
+    "price": 5.3,
+    "avg": 5.6518
+  },
+  {
+    "city": "Patna",
+    "price": 5.5,
+    "avg": 6.064299999999999
+  },
+  {
+    "city": "Ranchi",
+    "price": 5.71,
+    "avg": 6.0714
+  },
+  {
+    "city": "Varanasi",
+    "price": 5.19,
+    "avg": 6.0425
+  }
+]

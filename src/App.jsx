@@ -16,6 +16,37 @@ function App() {
   const [selectedDate, setSelectedDate] = useState('2026-01-28');
   const [range, setRange] = useState({ start: '2026-01-01', end: '2026-01-28' });
   const [currentTrend, setCurrentTrend] = useState([]);
+  const [livePrices, setLivePrices] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  // Fetch real-time data from our local API
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const dateObj = new Date(selectedDate);
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const year = String(dateObj.getFullYear());
+
+        const response = await fetch(`http://localhost:3001/api/egg-prices?month=${month}&year=${year}`);
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          setLivePrices(data.map(d => ({
+            city: d.city,
+            price: d.price,
+            tray30: d.price * 30,
+            box180: d.price * 180
+          })));
+        }
+      } catch (err) {
+        console.error("Failed to fetch live data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [selectedDate]);
 
   useEffect(() => {
     setCurrentTrend(generatePriceTrend(range.start, range.end));
@@ -107,7 +138,7 @@ function App() {
 
       {/* Price Board */}
       <section className="price-section section-container" id="prices">
-        <h2 className="section-title">Regional Suggested Prices</h2>
+        <h2 className="section-title">Regional Suggested Prices {loading && <span className="loader-small">⚡ Fetching live...</span>}</h2>
         <div className="price-table-container glass-panel animate-in">
           <table className="price-table">
             <thead>
@@ -120,17 +151,18 @@ function App() {
               </tr>
             </thead>
             <tbody>
-              {cityPrices.map(p => (
+              {(livePrices.length > 0 ? livePrices : cityPrices).map(p => (
                 <tr key={p.city}>
                   <td>{p.city}</td>
                   <td className="price-primary">₹ {p.price.toFixed(2)}</td>
                   <td>₹ {p.tray30.toFixed(2)}</td>
                   <td>₹ {p.box180.toFixed(0)}</td>
-                  <td><span className="tag-up">↑ Stable</span></td>
+                  <td><span className="tag-up">↑ Live</span></td>
                 </tr>
               ))}
             </tbody>
           </table>
+          {livePrices.length === 0 && !loading && <p style={{ textAlign: 'center', padding: '20px' }}>No live data for this period. Showing standard rates.</p>}
         </div>
       </section>
 

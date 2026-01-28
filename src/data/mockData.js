@@ -1,3 +1,5 @@
+import realData from './realData.json';
+
 export const stats2025 = {
   totalProduction: "149.11",
   unit: "Billion",
@@ -33,16 +35,12 @@ export const speciesDistribution = [
   { name: "Improved Ducks", percentage: 0.22 }
 ];
 
-export const cityPrices = [
-  { city: "Hyderabad", price: 5.10, tray30: 153, box180: 918 },
-  { city: "Mumbai", price: 5.45, tray30: 163.5, box180: 981 },
-  { city: "Delhi", price: 5.30, tray30: 159, box180: 954 },
-  { city: "Chennai", price: 5.25, tray30: 157.5, box180: 945 },
-  { city: "Kolkata", price: 5.60, tray30: 168, box180: 1008 },
-  { city: "Bangalore", price: 5.20, tray30: 156, box180: 936 },
-  { city: "Ahmedabad", price: 5.15, tray30: 154.5, box180: 927 },
-  { city: "Pune", price: 5.40, tray30: 162, box180: 972 }
-];
+export const cityPrices = realData.map(d => ({
+  city: d.city,
+  price: d.price,
+  tray30: d.price * 30,
+  box180: d.price * 180
+}));
 
 // Helper to generate trend data for a range
 export const generatePriceTrend = (startDate, endDate) => {
@@ -50,7 +48,7 @@ export const generatePriceTrend = (startDate, endDate) => {
   const end = new Date(endDate);
   const data = [];
   let current = new Date(start);
-  
+
   while (current <= end) {
     data.push({
       date: current.toISOString().split('T')[0],
