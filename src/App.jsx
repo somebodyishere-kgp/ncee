@@ -51,9 +51,42 @@ function App() {
     fetchData();
   }, [selectedDate, sheetType]);
 
+  // Fetch historical trend data for trend mode
   useEffect(() => {
-    setCurrentTrend(generatePriceTrend(range.start, range.end));
-  }, [range]);
+    const fetchTrendData = async () => {
+      if (mode !== 'trend') return;
+
+      const startDate = new Date(range.start);
+      const endDate = new Date(range.end);
+      const trendData = [];
+
+      // Fetch monthly averages for the range
+      try {
+        for (let d = new Date(startDate); d <= endDate; d.setMonth(d.getMonth() + 1)) {
+          const month = String(d.getMonth() + 1).padStart(2, '0');
+          const year = String(d.getFullYear());
+
+          const response = await fetch(`http://localhost:3001/api/egg-prices?month=${month}&year=${year}&type=${encodeURIComponent('Monthly Avg. Sheet')}`);
+          const data = await response.json();
+
+          if (Array.isArray(data) && data.length > 0) {
+            // Calculate average price across all cities
+            const avgPrice = data.reduce((sum, city) => sum + city.avg, 0) / data.length;
+            trendData.push({
+              date: `${year}-${month}`,
+              price: avgPrice.toFixed(2)
+            });
+          }
+        }
+        setCurrentTrend(trendData);
+      } catch (err) {
+        console.error("Failed to fetch trend data:", err);
+        setCurrentTrend(generatePriceTrend(range.start, range.end));
+      }
+    };
+
+    fetchTrendData();
+  }, [range, mode]);
 
   return (
     <div className="app-container">
