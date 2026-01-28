@@ -19,6 +19,7 @@ function App() {
   const [currentTrend, setCurrentTrend] = useState([]);
   const [livePrices, setLivePrices] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [trendLoading, setTrendLoading] = useState(false);
 
   // Fetch real-time data from our local API
   useEffect(() => {
@@ -56,6 +57,7 @@ function App() {
     const fetchTrendData = async () => {
       if (mode !== 'trend') return;
 
+      setTrendLoading(true);
       const startDate = new Date(range.start);
       const endDate = new Date(range.end);
       const trendData = [];
@@ -82,6 +84,8 @@ function App() {
       } catch (err) {
         console.error("Failed to fetch trend data:", err);
         setCurrentTrend(generatePriceTrend(range.start, range.end));
+      } finally {
+        setTrendLoading(false);
       }
     };
 
@@ -163,9 +167,15 @@ function App() {
             </>
           ) : (
             <div className="visual-card glass-card span-2">
-              <h3>Price Trend Timeline (₹ per Egg)</h3>
+              <h3>Price Trend Timeline (₹ per Egg) {trendLoading && <span className="loader-small">⚡ Loading historical data...</span>}</h3>
               <div className="trend-container">
-                <TrendLine data={currentTrend} color="var(--primary)" width={800} height={300} />
+                {trendLoading ? (
+                  <div style={{ textAlign: 'center', padding: '80px', color: 'var(--text-dim)' }}>
+                    Fetching monthly averages from NECC...
+                  </div>
+                ) : (
+                  <TrendLine data={currentTrend} color="var(--primary)" width={800} height={300} />
+                )}
               </div>
             </div>
           )}
