@@ -151,18 +151,23 @@ function App() {
               </tr>
             </thead>
             <tbody>
-              {(livePrices.length > 0 ? livePrices : cityPrices).map(p => (
-                <tr key={p.city}>
-                  <td>{p.city}</td>
-                  <td className="price-primary">₹ {p.price.toFixed(2)}</td>
-                  <td>₹ {p.tray30.toFixed(2)}</td>
-                  <td>₹ {p.box180.toFixed(0)}</td>
-                  <td><span className="tag-up">↑ Live</span></td>
-                </tr>
-              ))}
+              {loading ? (
+                <tr><td colSpan="5" style={{ textAlign: 'center', padding: '40px' }}>⚡ Loading live data from NECC...</td></tr>
+              ) : livePrices.length > 0 ? (
+                livePrices.map(p => (
+                  <tr key={p.city}>
+                    <td>{p.city}</td>
+                    <td className="price-primary">₹ {p.price.toFixed(2)}</td>
+                    <td>₹ {p.tray30.toFixed(2)}</td>
+                    <td>₹ {p.box180.toFixed(0)}</td>
+                    <td><span className="tag-up">● Live</span></td>
+                  </tr>
+                ))
+              ) : (
+                <tr><td colSpan="5" style={{ textAlign: 'center', padding: '40px' }}>Select a date to fetch live prices</td></tr>
+              )}
             </tbody>
           </table>
-          {livePrices.length === 0 && !loading && <p style={{ textAlign: 'center', padding: '20px' }}>No live data for this period. Showing standard rates.</p>}
         </div>
       </section>
 
@@ -197,11 +202,7 @@ function App() {
           They are published solely for the reference and information of the trade and industry.
         </p>
         <div className="footer-bottom">
-          <span>&copy; 2026 NECC Dashboard. Data inspired by e2necc.com.</span>
-          <div className="socials">
-            <span>Twitter</span>
-            <span>LinkedIn</span>
-          </div>
+          <span>&copy; 2026 NECC Dashboard. Live data from e2necc.com.</span>
         </div>
       </footer>
     </div>
