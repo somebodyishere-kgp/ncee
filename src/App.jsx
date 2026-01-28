@@ -20,6 +20,12 @@ function App() {
   const [livePrices, setLivePrices] = useState([]);
   const [loading, setLoading] = useState(false);
   const [trendLoading, setTrendLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Filter prices based on search
+  const filteredPrices = livePrices.filter(p =>
+    p.city.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   // Fetch real-time data from our local API
   useEffect(() => {
@@ -204,6 +210,16 @@ function App() {
             </button>
           </div>
         </div>
+        <div className="search-bar">
+          <input
+            type="text"
+            placeholder="🔍 Search city..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="search-input"
+          />
+          <span className="result-count">{filteredPrices.length} cities</span>
+        </div>
         <div className="price-table-container glass-panel animate-in">
           <table className="price-table">
             <thead>
@@ -218,8 +234,8 @@ function App() {
             <tbody>
               {loading ? (
                 <tr><td colSpan="5" style={{ textAlign: 'center', padding: '40px' }}>⚡ Loading live data from NECC...</td></tr>
-              ) : livePrices.length > 0 ? (
-                livePrices.map(p => (
+              ) : filteredPrices.length > 0 ? (
+                filteredPrices.map(p => (
                   <tr key={p.city}>
                     <td>{p.city}</td>
                     <td className="price-primary">₹ {p.price.toFixed(2)}</td>
@@ -228,6 +244,8 @@ function App() {
                     <td><span className={`tag-${sheetType === 'monthly' ? 'monthly' : 'up'}`}>● {sheetType === 'monthly' ? 'Avg' : 'Live'}</span></td>
                   </tr>
                 ))
+              ) : livePrices.length > 0 ? (
+                <tr><td colSpan="5" style={{ textAlign: 'center', padding: '40px' }}>No cities match "{searchQuery}"</td></tr>
               ) : (
                 <tr><td colSpan="5" style={{ textAlign: 'center', padding: '40px' }}>Select a date to fetch live prices</td></tr>
               )}
