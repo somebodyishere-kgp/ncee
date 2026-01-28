@@ -13,6 +13,7 @@ import { SelectionBar } from './components/Filters';
 
 function App() {
   const [mode, setMode] = useState('daily'); // 'daily' or 'trend'
+  const [sheetType, setSheetType] = useState('daily'); // 'daily' or 'monthly'
   const [selectedDate, setSelectedDate] = useState('2026-01-28');
   const [range, setRange] = useState({ start: '2026-01-01', end: '2026-01-28' });
   const [currentTrend, setCurrentTrend] = useState([]);
@@ -27,13 +28,15 @@ function App() {
         const dateObj = new Date(selectedDate);
         const month = String(dateObj.getMonth() + 1).padStart(2, '0');
         const year = String(dateObj.getFullYear());
+        const type = sheetType === 'monthly' ? 'Monthly Avg. Sheet' : 'Daily Rate Sheet';
 
-        const response = await fetch(`http://localhost:3001/api/egg-prices?month=${month}&year=${year}`);
+        const response = await fetch(`http://localhost:3001/api/egg-prices?month=${month}&year=${year}&type=${encodeURIComponent(type)}`);
         const data = await response.json();
         if (Array.isArray(data)) {
           setLivePrices(data.map(d => ({
             city: d.city,
             price: d.price,
+            avg: d.avg,
             tray30: d.price * 30,
             box180: d.price * 180
           })));
@@ -46,7 +49,7 @@ function App() {
     };
 
     fetchData();
-  }, [selectedDate]);
+  }, [selectedDate, sheetType]);
 
   useEffect(() => {
     setCurrentTrend(generatePriceTrend(range.start, range.end));
@@ -138,13 +141,32 @@ function App() {
 
       {/* Price Board */}
       <section className="price-section section-container" id="prices">
-        <h2 className="section-title">Regional Suggested Prices {loading && <span className="loader-small">⚡ Fetching live...</span>}</h2>
+        <div className="price-header">
+          <h2 className="section-title">
+            {sheetType === 'monthly' ? 'Monthly Average Prices' : 'Daily Suggested Prices'}
+            {loading && <span className="loader-small">⚡ Fetching...</span>}
+          </h2>
+          <div className="sheet-toggle">
+            <button
+              className={`toggle-btn ${sheetType === 'daily' ? 'active' : ''}`}
+              onClick={() => setSheetType('daily')}
+            >
+              📅 Daily
+            </button>
+            <button
+              className={`toggle-btn ${sheetType === 'monthly' ? 'active' : ''}`}
+              onClick={() => setSheetType('monthly')}
+            >
+              📊 Monthly Avg
+            </button>
+          </div>
+        </div>
         <div className="price-table-container glass-panel animate-in">
           <table className="price-table">
             <thead>
               <tr>
                 <th>Production Center</th>
-                <th>Price (1 Pc)</th>
+                <th>{sheetType === 'monthly' ? 'Monthly Avg (1 Pc)' : 'Price (1 Pc)'}</th>
                 <th>Tray (30 Pc)</th>
                 <th>Box (180 Pc)</th>
                 <th>Status</th>
@@ -160,7 +182,7 @@ function App() {
                     <td className="price-primary">₹ {p.price.toFixed(2)}</td>
                     <td>₹ {p.tray30.toFixed(2)}</td>
                     <td>₹ {p.box180.toFixed(0)}</td>
-                    <td><span className="tag-up">● Live</span></td>
+                    <td><span className={`tag-${sheetType === 'monthly' ? 'monthly' : 'up'}`}>● {sheetType === 'monthly' ? 'Avg' : 'Live'}</span></td>
                   </tr>
                 ))
               ) : (
