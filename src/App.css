@@ -605,3 +605,248 @@ nav a:hover {
     opacity: 0.4;
   }
 }
+
+/* Forecast Section Styles */
+.forecast-section {
+  padding: 40px !important;
+}
+
+.forecast-title-icon {
+  margin-right: 10px;
+}
+
+.forecast-controls {
+  margin-bottom: 30px;
+}
+
+.controls-row {
+  display: flex;
+  gap: 40px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-bottom: 25px;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.control-group label {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.horizon-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.horizon-btn {
+  padding: 10px 18px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass);
+  color: var(--text-dim);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.horizon-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.horizon-btn.active {
+  background: var(--gold-gradient);
+  color: #0D1137;
+  border-color: var(--primary);
+  font-weight: 600;
+}
+
+.city-select {
+  padding: 10px 20px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass);
+  color: white;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  min-width: 200px;
+  cursor: pointer;
+}
+
+.city-select:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.city-select option {
+  background: #0D1137;
+  color: white;
+}
+
+/* Forecast Metrics */
+.forecast-metrics {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 15px;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 16px;
+  margin-top: 20px;
+}
+
+.metric-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+  border-color: var(--primary);
+  background: rgba(255, 215, 0, 0.05);
+}
+
+.metric-icon {
+  font-size: 1.5rem;
+}
+
+.metric-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.metric-label {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metric-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* Forecast Chart Container */
+.forecast-chart-container {
+  margin: 30px 0;
+  min-height: 350px;
+}
+
+.forecast-chart-wrapper {
+  width: 100%;
+}
+
+.forecast-chart-svg {
+  width: 100%;
+  max-width: 100%;
+}
+
+.forecast-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px;
+  color: var(--text-dim);
+  gap: 20px;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid var(--glass-border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.confidence-band {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Forecast Description */
+.forecast-description {
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(33, 150, 243, 0.1), rgba(76, 175, 80, 0.1));
+  border-radius: 12px;
+  border-left: 4px solid #2196F3;
+}
+
+.forecast-description p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--text-dim);
+  line-height: 1.7;
+}
+
+.forecast-description strong {
+  color: var(--text);
+}
+
+/* Forecast Mode Hint */
+.forecast-mode-hint {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  padding: 10px 20px;
+  background: rgba(255, 215, 0, 0.1);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+/* Responsive Forecast */
+@media (max-width: 1024px) {
+  .forecast-metrics {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .forecast-metrics {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .controls-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+  }
+
+  .horizon-buttons {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 500px) {
+  .forecast-metrics {
+    grid-template-columns: 1fr;
+  }
+}

@@ -42,20 +42,30 @@ export const SelectionBar = ({ selectedDate, onDateChange, range, onRangeChange,
                     className={mode === 'daily' ? 'active' : ''}
                     onClick={() => setMode('daily')}
                 >
-                    Daily Overview
+                    📊 Daily Overview
                 </button>
                 <button
                     className={mode === 'trend' ? 'active' : ''}
                     onClick={() => setMode('trend')}
                 >
-                    Price Trends
+                    📈 Price Trends
+                </button>
+                <button
+                    className={mode === 'forecast' ? 'active' : ''}
+                    onClick={() => setMode('forecast')}
+                >
+                    🔮 Forecast
                 </button>
             </div>
 
             {mode === 'daily' ? (
                 <DateSelector selectedDate={selectedDate} onDateChange={onDateChange} />
-            ) : (
+            ) : mode === 'trend' ? (
                 <RangeSelector range={range} onRangeChange={onRangeChange} />
+            ) : (
+                <div className="filter-group">
+                    <span className="forecast-mode-hint">📅 12-month historical data analysis</span>
+                </div>
             )}
         </div>
     );

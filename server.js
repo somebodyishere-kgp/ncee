@@ -36,6 +36,20 @@ app.get('/api/egg-prices', (req, res) => {
     });
 });
 
+// Serve static files from the build directory
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+app.use(express.static(path.join(__dirname, 'dist')));
+
+// Handle React routing, return all requests to React app
+app.get(/(.*)/, (req, res) => {
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
+
 app.listen(port, () => {
     console.log(`🥚 NECC API Server running at http://localhost:${port}`);
 });
