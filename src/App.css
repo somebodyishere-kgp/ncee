@@ -169,6 +169,12 @@ input[type="date"]:focus {
   font-size: 2rem;
 }
 
+.logo-img {
+  height: 40px;
+  width: auto;
+  filter: drop-shadow(0 0 5px var(--primary-glow));
+}
+
 .highlight {
   color: var(--primary);
 }

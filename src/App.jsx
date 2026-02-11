@@ -13,6 +13,7 @@ import { SelectionBar } from './components/Filters';
 import { ForecastChart } from './components/ForecastChart';
 import { ForecastControls } from './components/ForecastControls';
 import { generateForecast, movingAverage } from './utils/forecasting';
+import eggLogo from './assets/egg_logo.svg';
 
 function App() {
   const [mode, setMode] = useState('daily'); // 'daily', 'trend', or 'forecast'
@@ -154,7 +155,7 @@ function App() {
       {/* Header */}
       <header className="main-header animate-in">
         <div className="logo">
-          <span className="logo-icon">🥚</span>
+          <img src={eggLogo} alt="NECC Logo" className="logo-img" />
           <span className="logo-text">NECC <span className="highlight">EGGPRICE</span></span>
         </div>
         <nav>
