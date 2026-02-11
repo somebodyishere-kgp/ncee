@@ -34,7 +34,52 @@ function App() {
   const [forecastLoading, setForecastLoading] = useState(false);
   const [availableCities, setAvailableCities] = useState([]);
 
-  // ... (lines 36-123 remain roughly same, skipping for brevity in search) ...
+  // Filter prices based on search
+  const filteredPrices = livePrices.filter(p =>
+    p.city.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Calculate price stats
+  const priceStats = livePrices.length > 0 ? {
+    min: Math.min(...livePrices.map(p => p.price)),
+    max: Math.max(...livePrices.map(p => p.price)),
+    avg: (livePrices.reduce((sum, p) => sum + p.price, 0) / livePrices.length).toFixed(2),
+    minCity: livePrices.find(p => p.price === Math.min(...livePrices.map(x => x.price)))?.city,
+    maxCity: livePrices.find(p => p.price === Math.max(...livePrices.map(x => x.price)))?.city
+  } : null;
+
+  // Fetch real-time data from our local API
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const dateObj = new Date(selectedDate);
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const year = String(dateObj.getFullYear());
+        const type = sheetType === 'monthly' ? 'Monthly Avg. Sheet' : 'Daily Rate Sheet';
+
+        const response = await fetch(`/api/egg-prices?month=${month}&year=${year}&type=${encodeURIComponent(type)}`);
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          setLivePrices(data.map(d => ({
+            city: d.city,
+            price: d.price,
+            avg: d.avg,
+            tray30: d.price * 30,
+            box180: d.price * 180
+          })));
+          // Update available cities for forecast selection
+          setAvailableCities(data.map(d => d.city));
+        }
+      } catch (err) {
+        console.error("Failed to fetch live data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [selectedDate, sheetType]);
 
   // Fetch historical data for forecasting
   useEffect(() => {
