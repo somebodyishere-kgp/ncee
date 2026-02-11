@@ -274,8 +274,10 @@ function App() {
                 <p>
                   <strong>📊 Analysis:</strong> This forecast uses
                   {forecastModel === 'linear' ? ' Linear Regression' :
-                    forecastModel === 'wma' ? ' Weighted Moving Average' :
-                      ' Exponential Smoothing'} on the last 12 months of NECC price data
+                    forecastModel === 'poly' ? ' Polynomial Regression (Curved)' :
+                      forecastModel === 'seasonal' ? ' Seasonal Decomposition' :
+                        forecastModel === 'wma' ? ' Weighted Moving Average' :
+                          ' Exponential Smoothing'} on the last 12 months of NECC price data
                   to predict future egg prices. The shaded area represents the 95% confidence interval.
                 </p>
               </div>
