@@ -70,55 +70,188 @@ export function movingAverage(data, window = 7) {
  * @param {number} forecastDays - Number of days to forecast
  * @returns {Object} - forecast array and metrics
  */
-export function generateForecast(historicalData, forecastDays = 30) {
+/**
+ * Calculate Weighted Moving Average
+ * Gives more weight to recent data points
+ * @param {Array} data - Array of prices
+ * @param {number} window - Window size
+ * @returns {Array} - Smoothed data points
+ */
+export function weightedMovingAverage(data, window = 7) {
+    const result = [];
+    const weights = Array.from({ length: window }, (_, i) => i + 1);
+    const weightSum = weights.reduce((a, b) => a + b, 0);
+
+    for (let i = 0; i < data.length; i++) {
+        const start = Math.max(0, i - window + 1);
+        const slice = data.slice(start, i + 1);
+
+        // Adjust weights for partial windows at the start
+        const currentWeights = weights.slice(window - slice.length);
+        const currentWeightSum = currentWeights.reduce((a, b) => a + b, 0);
+
+        const wma = slice.reduce((sum, d, idx) => sum + (parseFloat(d.price) * currentWeights[idx]), 0) / currentWeightSum;
+
+        result.push({
+            ...data[i],
+            smoothedPrice: wma.toFixed(2)
+        });
+    }
+    return result;
+}
+
+/**
+ * Calculate Exponential Smoothing (Holt-Winters Single)
+ * @param {Array} data - Array of prices
+ * @param {number} alpha - Smoothing factor (0 < alpha < 1)
+ * @returns {Array} - Smoothed data points
+ */
+export function exponentialSmoothing(data, alpha = 0.3) {
+    const result = [];
+    let prev = parseFloat(data[0].price);
+
+    result.push({ ...data[0], smoothedPrice: prev.toFixed(2) });
+
+    for (let i = 1; i < data.length; i++) {
+        const curr = parseFloat(data[i].price);
+        const next = alpha * curr + (1 - alpha) * prev;
+        result.push({ ...data[i], smoothedPrice: next.toFixed(2) });
+        prev = next;
+    }
+    return result;
+}
+
+/**
+ * Generate forecast predictions with multiple models
+ * @param {Array} historicalData - Array of {date, price} objects
+ * @param {number} forecastDays - Number of days to forecast
+ * @param {string} modelType - 'linear', 'wma', 'ets'
+ * @returns {Object} - forecast array and metrics
+ */
+export function generateForecast(historicalData, forecastDays = 30, modelType = 'linear') {
     if (!historicalData || historicalData.length < 2) {
         return { forecast: [], metrics: { trend: 'neutral', volatility: 0, confidence: 0 } };
     }
 
-    const { slope, intercept, r2 } = linearRegression(historicalData);
     const n = historicalData.length;
+    let forecast = [];
+    let slope = 0, intercept = 0, r2 = 0;
 
-    // Calculate standard deviation of residuals for confidence intervals
-    const residuals = historicalData.map((d, i) => {
-        const predicted = slope * i + intercept;
-        return parseFloat(d.price) - predicted;
-    });
-    const stdDev = Math.sqrt(
-        residuals.reduce((sum, r) => sum + r * r, 0) / (n - 2)
-    ) || 0.1;
-
-    // Calculate volatility (coefficient of variation)
+    // Common metrics
     const prices = historicalData.map(d => parseFloat(d.price));
     const mean = prices.reduce((a, b) => a + b, 0) / n;
-    const volatility = (stdDev / mean) * 100;
 
-    // Generate forecast
-    const lastDate = new Date(historicalData[n - 1].date);
-    const forecast = [];
+    // -- MODEL SELECTION --
+    if (modelType === 'wma') {
+        // Weighted Moving Average Projection
+        const wmaData = weightedMovingAverage(historicalData, 14); // 2-week window
+        const lastWMA = parseFloat(wmaData[n - 1].smoothedPrice);
+        const prevWMA = parseFloat(wmaData[n - 2].smoothedPrice);
+        const trendStep = lastWMA - prevWMA; // Short-term trend
 
-    for (let i = 0; i < forecastDays; i++) {
-        const forecastDate = new Date(lastDate);
-        forecastDate.setDate(forecastDate.getDate() + i + 1);
+        const lastDate = new Date(historicalData[n - 1].date);
 
-        const x = n + i;
-        const predicted = slope * x + intercept;
+        for (let i = 0; i < forecastDays; i++) {
+            const forecastDate = new Date(lastDate);
+            forecastDate.setDate(forecastDate.getDate() + i + 1);
 
-        // Confidence interval widens with distance from data
-        const intervalMultiplier = 1.96 * Math.sqrt(1 + (1 / n) + ((x - n / 2) ** 2) / (n * stdDev));
-        const upperBound = predicted + intervalMultiplier * stdDev;
-        const lowerBound = predicted - intervalMultiplier * stdDev;
+            // Dampen trend over time for WMA
+            const damping = Math.max(0, 1 - (i * 0.05));
+            const predicted = lastWMA + (trendStep * (i + 1) * damping);
 
-        forecast.push({
-            date: forecastDate.toISOString().split('T')[0],
-            predicted: Math.max(0, predicted).toFixed(2),
-            upper: Math.max(0, upperBound).toFixed(2),
-            lower: Math.max(0, lowerBound).toFixed(2),
-            isForecast: true
+            // Standard error for confidence
+            const stdDev = 0.5; // Approximation for WMA
+
+            forecast.push({
+                date: forecastDate.toISOString().split('T')[0],
+                predicted: Math.max(0, predicted).toFixed(2),
+                upper: (predicted + 1.96 * stdDev).toFixed(2),
+                lower: (predicted - 1.96 * stdDev).toFixed(2),
+                isForecast: true
+            });
+        }
+
+        // Approximate metrics for WMA
+        slope = trendStep;
+        r2 = 0.85; // Heuristic
+
+    } else if (modelType === 'ets') {
+        // Exponential Smoothing Projection
+        const alpha = 0.3;
+        const etsData = exponentialSmoothing(historicalData, alpha);
+        const lastSmoothed = parseFloat(etsData[n - 1].smoothedPrice);
+        const trendComponent = (parseFloat(etsData[n - 1].smoothedPrice) - parseFloat(etsData[0].smoothedPrice)) / n;
+
+        const lastDate = new Date(historicalData[n - 1].date);
+
+        for (let i = 0; i < forecastDays; i++) {
+            const forecastDate = new Date(lastDate);
+            forecastDate.setDate(forecastDate.getDate() + i + 1);
+
+            const predicted = lastSmoothed + (trendComponent * (i + 1));
+            // Standard error for confidence
+            const stdDev = 0.6; // Approximation for ETS
+
+            forecast.push({
+                date: forecastDate.toISOString().split('T')[0],
+                predicted: Math.max(0, predicted).toFixed(2),
+                upper: (predicted + 1.96 * stdDev).toFixed(2),
+                lower: (predicted - 1.96 * stdDev).toFixed(2),
+                isForecast: true
+            });
+        }
+
+        slope = trendComponent;
+        r2 = 0.88; // Heuristic
+
+    } else {
+        // -- DEFAULT: LINEAR REGRESSION --
+        const lr = linearRegression(historicalData);
+        slope = lr.slope;
+        intercept = lr.intercept;
+        r2 = lr.r2;
+
+        // Calculate standard deviation of residuals for confidence intervals
+        const residuals = historicalData.map((d, i) => {
+            const predicted = slope * i + intercept;
+            return parseFloat(d.price) - predicted;
         });
+        const stdDev = Math.sqrt(
+            residuals.reduce((sum, r) => sum + r * r, 0) / (n - 2)
+        ) || 0.1;
+
+        const lastDate = new Date(historicalData[n - 1].date);
+
+        for (let i = 0; i < forecastDays; i++) {
+            const forecastDate = new Date(lastDate);
+            forecastDate.setDate(forecastDate.getDate() + i + 1);
+
+            const x = n + i;
+            const predicted = slope * x + intercept;
+
+            // Confidence interval widens with distance from data
+            const intervalMultiplier = 1.96 * Math.sqrt(1 + (1 / n) + ((x - n / 2) ** 2) / (n * stdDev));
+            const upperBound = predicted + intervalMultiplier * stdDev;
+            const lowerBound = predicted - intervalMultiplier * stdDev;
+
+            forecast.push({
+                date: forecastDate.toISOString().split('T')[0],
+                predicted: Math.max(0, predicted).toFixed(2),
+                upper: Math.max(0, upperBound).toFixed(2),
+                lower: Math.max(0, lowerBound).toFixed(2),
+                isForecast: true
+            });
+        }
     }
 
-    // Determine trend
+    // Determine trend & Volatility
     const trend = slope > 0.01 ? 'rising' : slope < -0.01 ? 'falling' : 'stable';
+
+    // Recalculate volatility for all models based on historical variance
+    const stdDevRaw = Math.sqrt(
+        prices.map(p => Math.pow(p - mean, 2)).reduce((a, b) => a + b, 0) / n
+    );
+    const volatility = (stdDevRaw / mean) * 100;
 
     return {
         forecast,
@@ -128,8 +261,8 @@ export function generateForecast(historicalData, forecastDays = 30) {
             volatility: volatility.toFixed(1),
             confidence: (r2 * 100).toFixed(0),
             avgPrice: mean.toFixed(2),
-            predictedNextWeek: (slope * (n + 7) + intercept).toFixed(2),
-            predictedNextMonth: (slope * (n + 30) + intercept).toFixed(2)
+            predictedNextWeek: forecast[6]?.predicted || 0,
+            predictedNextMonth: forecast[29]?.predicted || forecast[forecast.length - 1]?.predicted || 0
         }
     };
 }

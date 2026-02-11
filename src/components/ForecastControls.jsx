@@ -6,7 +6,9 @@ export const ForecastControls = ({
     selectedCity,
     setSelectedCity,
     cities = [],
-    metrics = {}
+    metrics = {},
+    model = 'linear',
+    setModel = () => { }
 }) => {
     const horizonOptions = [
         { days: 7, label: '1 Week' },
@@ -56,6 +58,20 @@ export const ForecastControls = ({
                         {cities.map(city => (
                             <option key={city} value={city}>{city}</option>
                         ))}
+                    </select>
+                </div>
+
+                <div className="control-group">
+                    <label>Prediction Model</label>
+                    <select
+                        value={model}
+                        onChange={(e) => setModel(e.target.value)}
+                        className="city-select model-select"
+                        style={{ minWidth: '180px' }}
+                    >
+                        <option value="linear">Linear Regression (Standard)</option>
+                        <option value="wma">Weighted Moving Avg</option>
+                        <option value="ets">Exponential Smoothing (ETS)</option>
                     </select>
                 </div>
             </div>
