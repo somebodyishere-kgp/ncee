@@ -240,7 +240,7 @@ function App() {
             <div className="visual-card glass-card span-2 forecast-section">
               <h3>
                 <span className="forecast-title-icon">🔮</span>
-                Price Forecasting & Analysis
+                Price Prediction of Egg Market
                 {forecastLoading && <span className="loader-small">⚡ Building forecast model...</span>}
               </h3>
 
