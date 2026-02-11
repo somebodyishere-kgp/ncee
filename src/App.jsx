@@ -27,7 +27,7 @@ function App() {
 
   // Forecast state
   const [forecastDays, setForecastDays] = useState(30);
-  const [forecastModel, setForecastModel] = useState('linear');
+  const [forecastModel, setForecastModel] = useState('seasonal');
   const [selectedCity, setSelectedCity] = useState('all');
   const [historicalData, setHistoricalData] = useState([]);
   const [forecastResult, setForecastResult] = useState({ forecast: [], metrics: {} });
@@ -273,11 +273,9 @@ function App() {
               <div className="forecast-description">
                 <p>
                   <strong>📊 Analysis:</strong> This forecast uses
-                  {forecastModel === 'linear' ? ' Linear Regression' :
-                    forecastModel === 'poly' ? ' Polynomial Regression (Curved)' :
-                      forecastModel === 'seasonal' ? ' Seasonal Decomposition' :
-                        forecastModel === 'wma' ? ' Weighted Moving Average' :
-                          ' Exponential Smoothing'} on the last 12 months of NECC price data
+                  {forecastModel === 'seasonal' ? ' Seasonal Decomposition' :
+                    forecastModel === 'wma' ? ' Weighted Moving Average' :
+                      ' Exponential Smoothing'} on the last 12 months of NECC price data
                   to predict future egg prices. The shaded area represents the 95% confidence interval.
                 </p>
               </div>

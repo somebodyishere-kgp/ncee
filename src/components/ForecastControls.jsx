@@ -69,8 +69,6 @@ export const ForecastControls = ({
                         className="city-select model-select"
                         style={{ minWidth: '180px' }}
                     >
-                        <option value="linear">Linear Regression (Standard)</option>
-                        <option value="poly">Polynomial Regression (Curved)</option>
                         <option value="seasonal">Seasonal Decomposition</option>
                         <option value="wma">Weighted Moving Avg</option>
                         <option value="ets">Exponential Smoothing (ETS)</option>
